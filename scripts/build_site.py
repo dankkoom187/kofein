@@ -5,24 +5,29 @@
 Источники:
     templates/index.html   - разметка с плейсхолдерами {{...}}
     data/business.json     - карточка, тексты секций, ссылки
-    data/menu.json         - меню по разделам
+    data/menu.json         - меню кофейни
     data/reviews.json      - отзывы гостей
-    data/photos.json       - манифест фотографий (создаётся build_photos.py)
+    data/photos.json       - манифест фото кофейни
+    data/flowers.json      - каталог цветочной студии
+    data/flowers-photos.json - фото букетов
 """
 import html
 import json
 import os
+import re
+from urllib.parse import quote
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DATA = os.path.join(ROOT, "data")
 TEMPLATE = os.path.join(ROOT, "templates", "index.html")
 OUT = os.path.join(ROOT, "index.html")
 
+VISIBLE_ITEMS = 9
+
 ICONS = {
     "phone": '<path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 4 5a2 2 0 0 1 2-2Z"/>',
     "route": '<circle cx="6" cy="17" r="2.5"/><circle cx="18" cy="8" r="2.5"/>'
              '<path d="M8.5 17h6a4 4 0 0 0 0-8H10a3 3 0 0 1 0-6h5.5"/>',
-    "arrow": '<path d="M4 12h15M13 6l6 6-6 6"/>',
 }
 
 
@@ -33,12 +38,37 @@ def icon(name, size=16):
 
 
 def load(name):
-    with open(os.path.join(DATA, name), encoding="utf-8") as fh:
+    path = os.path.join(DATA, name)
+    with open(path, encoding="utf-8") as fh:
         return json.load(fh)
 
 
 def esc(text):
     return html.escape(str(text), quote=True)
+
+
+def money(value):
+    return "{:,}".format(int(value)).replace(",", "\u00a0") + "\u00a0₽"
+
+
+def nice_quotes(text):
+    out = []
+    opened = False
+    for ch in text:
+        if ch == '"':
+            out.append("«" if not opened else "»")
+            opened = not opened
+        else:
+            out.append(ch)
+    return "".join(out)
+
+
+def composition(text):
+    text = re.sub(r"\s*\n\s*", ", ", text or "")
+    text = re.sub(r"\s+", " ", text).strip(" ,")
+    if text:
+        text = text[0].upper() + text[1:]
+    return text
 
 
 def photo(photos, pid, fallback_group="gallery"):
@@ -69,7 +99,6 @@ def build_menu(menu):
 
 
 def build_gallery(photos):
-    # сначала фото места, затем снимки гостей — от новых к старым
     gallery = sorted([p for p in photos["items"] if p["group"] == "gallery"], key=lambda p: p["id"])
     reviews = sorted([p for p in photos["items"] if p["group"] in ("review", "candidate")],
                      key=lambda p: (p["date"] or "", p["id"]), reverse=True)
@@ -87,6 +116,60 @@ def build_gallery(photos):
                item["width"], item["height"], caption, caption)
         )
     return "\n          ".join(blocks)
+
+
+def build_flowers_gallery(photos, ids=None, limit=8):
+    by_id = {os.path.basename(p["file"]).replace(".jpg", ""): p for p in photos["items"]}
+    chosen = [by_id[i] for i in ids if i in by_id] if ids else []
+    if not chosen:
+        chosen = photos["items"][:limit]
+    blocks = []
+    for item in chosen:
+        caption = esc(item["caption"])
+        blocks.append(
+            '<li><button class="gallery__item gallery__item--flower" type="button" '
+            'data-full="%s" data-caption="%s">'
+            '<img src="%s" srcset="%s 560w, %s 1200w" sizes="(max-width: 560px) 31vw, 16vw" '
+            'width="560" height="747" alt="%s" loading="lazy" decoding="async">'
+            "<figcaption>%s</figcaption></button></li>"
+            % (esc(item["file"]), caption, esc(item["thumb"]), esc(item["thumb"]), esc(item["file"]),
+               caption, caption)
+        )
+    return "\n          ".join(blocks)
+
+
+def build_flowers(items, flowers):
+    order = ["Букеты", "Корзины", "Коробки", "Ящики", "Композиции"]
+    counts = {}
+    for item in items:
+        counts[item["kind"]] = counts.get(item["kind"], 0) + 1
+
+    chips = ['<button class="chip is-active" type="button" data-kind="all" aria-pressed="true">'
+             'Все<span>%d</span></button>' % len(items)]
+    for kind in order:
+        if counts.get(kind):
+            chips.append('<button class="chip" type="button" data-kind="%s" aria-pressed="false">%s<span>%d</span></button>'
+                         % (esc(kind), esc(kind), counts[kind]))
+
+    sorted_items = sorted(items, key=lambda i: (order.index(i["kind"]) if i["kind"] in order else 9, i["price"]))
+    blocks = []
+    for index, item in enumerate(sorted_items):
+        title = nice_quotes(item["title"])
+        price = money(item["price"])
+        text = "Здравствуйте! Хочу заказать: %s, %s." % (title, price)
+        link = flowers["whatsapp"] + "?text=" + quote(text)
+        hidden = " hidden" if index >= VISIBLE_ITEMS else ""
+        blocks.append(
+            '<li class="product"%s data-kind="%s">'
+            '<div class="product__row"><h3 class="product__title">%s</h3>'
+            '<span class="product__price">%s</span></div>'
+            '<p class="product__composition">%s</p>'
+            '<a class="product__order" href="%s" target="_blank" rel="noopener">Заказать<span aria-hidden="true">→</span></a>'
+            "</li>"
+            % (hidden, esc(item["kind"]), esc(title), esc(price),
+               esc(composition(item.get("composition", ""))), esc(link))
+        )
+    return "\n            ".join(chips), "\n          ".join(blocks)
 
 
 def build_reviews(reviews):
@@ -114,8 +197,7 @@ def build_steps(steps):
 
 
 def build_jsonld(business, menu):
-    data = {
-        "@context": "https://schema.org",
+    coffee = {
         "@type": "CafeOrCoffeeShop",
         "name": business["name"],
         "url": business["maps"],
@@ -128,11 +210,7 @@ def build_jsonld(business, menu):
             "postalCode": business["postalCode"],
             "addressCountry": "RU",
         },
-        "geo": {
-            "@type": "GeoCoordinates",
-            "latitude": business["geo"]["lat"],
-            "longitude": business["geo"]["lon"],
-        },
+        "geo": {"@type": "GeoCoordinates", "latitude": business["geo"]["lat"], "longitude": business["geo"]["lon"]},
         "openingHoursSpecification": [{
             "@type": "OpeningHoursSpecification",
             "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
@@ -153,16 +231,45 @@ def build_jsonld(business, menu):
                 "hasMenuItem": [{
                     "@type": "MenuItem",
                     "name": item["title"],
-                    "offers": {
-                        "@type": "Offer",
-                        "price": item["price"].replace(" ", "").replace("₽", ""),
-                        "priceCurrency": "RUB",
-                    },
+                    "offers": {"@type": "Offer",
+                               "price": item["price"].replace(" ", "").replace("₽", ""),
+                               "priceCurrency": "RUB"},
                 } for item in rubric["items"]],
             } for rubric in menu["rubrics"]],
         },
     }
-    return json.dumps(data, ensure_ascii=False)
+
+    flowers = business["flowers"]
+    florist = {
+        "@type": "Florist",
+        "name": flowers["name"],
+        "description": flowers["tagline"],
+        "url": flowers["maps"],
+        "telephone": flowers["phone"],
+        "priceRange": "₽₽",
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": business["addressShort"],
+            "addressLocality": "Москва",
+            "postalCode": business["postalCode"],
+            "addressCountry": "RU",
+        },
+        "geo": {"@type": "GeoCoordinates", "latitude": business["geo"]["lat"], "longitude": business["geo"]["lon"]},
+        "openingHoursSpecification": [{
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"],
+            "opens": business["hours"]["open"],
+            "closes": business["hours"]["close"],
+        }],
+        "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": flowers["rating"]["value"].replace(",", "."),
+            "reviewCount": flowers["rating"]["reviews"],
+            "bestRating": 5,
+        },
+    }
+
+    return json.dumps({"@context": "https://schema.org", "@graph": [coffee, florist]}, ensure_ascii=False)
 
 
 def main():
@@ -170,26 +277,30 @@ def main():
     menu = load("menu.json")
     reviews = load("reviews.json")
     photos = load("photos.json")
+    flowers_data = load("flowers.json")
+    flowers_photos = load("flowers-photos.json")
 
     hero = photo(photos, business["photos"]["hero"], "review")
     intro_main = photo(photos, business["photos"]["introMain"])
     intro_small = photo(photos, business["photos"]["introSmall"])
     menu_photo = photo(photos, business["photos"]["menu"], "review")
 
-    description = ("%s: %s. %s, ежедневно %s–%s, %s. Средний чек %s." % (
-        business["name"], business["hero"]["subtitle"], business["addressShort"],
-        business["hours"]["open"], business["hours"]["close"], business["phone"],
-        business["prices"]["averageBill"]))
+    flowers = business["flowers"]
+    chips_html, items_html = build_flowers(flowers_data["items"], flowers)
+
+    description = ("%s и цветочная студия %s: %s, ежедневно %s–%s, %s. Кофе, букеты, доставка." % (
+        business["name"], flowers["name"], business["addressShort"],
+        business["hours"]["open"], business["hours"]["close"], business["phone"]))
 
     site_url = (business.get("site") or {}).get("url", "").strip()
     og_image = (site_url.rstrip("/") + "/" if site_url else "") + "assets/img/og.jpg"
 
     values = {
-        "TITLE": "%s — %s" % (business["name"], business["hero"]["subtitle"]),
+        "TITLE": "%s и %s — кофейня и цветы на Бориса Пастернака" % (business["name"], flowers["name"]),
         "DESCRIPTION": esc(description),
         "NAME": esc(business["name"]),
         "OG_IMAGE": esc(og_image),
-        "OG_ALT": esc("Кофеin — кофейня на Бориса Пастернака, 43"),
+        "OG_ALT": esc("Кофеin — кофейня и цветы на Бориса Пастернака, 43"),
         "OG_URL_TAG": ('<meta property="og:url" content="%s">' % esc(site_url)) if site_url else "",
         "CANONICAL": ('<link rel="canonical" href="%s">' % esc(site_url)) if site_url else "",
         "SHORT_NAME": esc(business["shortName"]),
@@ -239,6 +350,23 @@ def main():
         "GALLERY_NOTE": esc(business["gallerySection"]["note"]),
         "GALLERY_HTML": build_gallery(photos),
         "PHOTOS_COUNT": len(photos["items"]),
+        "FLOWERS_LABEL": esc(flowers["section"]["label"]),
+        "FLOWERS_TITLE": esc(flowers["section"]["title"]),
+        "FLOWERS_NOTE": esc(flowers["section"]["note"]),
+        "FLOWERS_RATING": esc(flowers["rating"]["value"]),
+        "FLOWERS_REVIEWS": esc(flowers["rating"]["reviews"]),
+        "FLOWERS_NAME": esc(flowers["name"]),
+        "FLOWERS_PHONE": esc(flowers["phone"]),
+        "FLOWERS_PHONE_HREF": esc(flowers["phoneHref"]),
+        "FLOWERS_WA": esc(flowers["whatsapp"]),
+        "FLOWERS_TG": esc(flowers["telegram"]),
+        "FLOWERS_VK": esc(flowers["vk"]),
+        "FLOWERS_DZEN": esc(flowers["dzen"]),
+        "FLOWERS_MAPS": esc(flowers["maps"]),
+        "FLOWERS_GALLERY": build_flowers_gallery(flowers_photos, flowers.get("gallery")),
+        "FLOWERS_CHIPS": chips_html,
+        "FLOWERS_ITEMS": items_html,
+        "FLOWERS_CATALOG_NOTE": esc(flowers["catalogNote"]),
         "REVIEWS_LABEL": esc(business["reviewsSection"]["label"]),
         "REVIEWS_TITLE": esc(business["reviewsSection"]["title"]),
         "REVIEWS_LINK": esc(business["reviewsSection"]["linkText"]),
@@ -272,7 +400,9 @@ def main():
 
     with open(OUT, "w", encoding="utf-8") as fh:
         fh.write(page)
-    print("index.html: %d bytes, photos %d, reviews %d" % (len(page), len(photos["items"]), len(reviews["items"])))
+    print("index.html: %d bytes, coffee photos %d, reviews %d, flowers %d, flower photos %d"
+          % (len(page), len(photos["items"]), len(reviews["items"]),
+             len(flowers_data["items"]), len(flowers_photos["items"])))
 
 
 if __name__ == "__main__":

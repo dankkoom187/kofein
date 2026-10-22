@@ -60,6 +60,50 @@
     });
   }
 
+  /* ---------- Каталог цветов: категории и «показать ещё» ---------- */
+  var productList = document.getElementById("flowers-list");
+  var chips = Array.prototype.slice.call(document.querySelectorAll(".chips .chip"));
+  var moreBtn = document.getElementById("flowers-more");
+  var STEP = 9;
+
+  if (productList && chips.length) {
+    var products = Array.prototype.slice.call(productList.querySelectorAll(".product"));
+    var activeKind = "all";
+    var shown = STEP;
+
+    var applyFilter = function () {
+      var matched = 0;
+      products.forEach(function (item) {
+        var ok = activeKind === "all" || item.getAttribute("data-kind") === activeKind;
+        if (ok) matched += 1;
+        item.hidden = !(ok && matched <= shown);
+      });
+      if (moreBtn) moreBtn.hidden = matched <= shown;
+    };
+
+    chips.forEach(function (chip) {
+      chip.addEventListener("click", function () {
+        activeKind = chip.getAttribute("data-kind");
+        shown = STEP;
+        chips.forEach(function (other) {
+          var on = other === chip;
+          other.classList.toggle("is-active", on);
+          other.setAttribute("aria-pressed", String(on));
+        });
+        applyFilter();
+      });
+    });
+
+    if (moreBtn) {
+      moreBtn.addEventListener("click", function () {
+        shown += STEP;
+        applyFilter();
+      });
+    }
+
+    applyFilter();
+  }
+
   /* ---------- Просмотр фотографий ---------- */
   var lightbox = document.querySelector(".lightbox");
   var items = Array.prototype.slice.call(document.querySelectorAll(".gallery__item"));

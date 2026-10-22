@@ -796,6 +796,142 @@ a.fact__value:hover { color: #fff; }
 }
 
 /* ============================================================
+   Цветочная студия
+   ============================================================ */
+.flowers__gallery {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 clamp(36px, 5vw, 56px);
+  padding: 0;
+  list-style: none;
+}
+.flowers__gallery .gallery__item { margin: 0; }
+.flowers__gallery .gallery__item img { aspect-ratio: 3 / 4; object-fit: cover; }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 6px;
+}
+.chip {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 10px 18px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-2);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: background-color 0.2s var(--ease), color 0.2s var(--ease), border-color 0.2s var(--ease);
+}
+.chip span {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: var(--ink-3);
+  font-variant-numeric: tabular-nums;
+}
+.chip:hover { border-color: var(--ink-3); color: var(--ink); }
+.chip.is-active { background: var(--forest); border-color: var(--forest); color: var(--on-dark); }
+.chip.is-active span { color: var(--on-dark-2); }
+
+.products {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0 40px;
+  margin: 22px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.product {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 20px 0 24px;
+  border-top: 1px solid var(--line);
+}
+.product[hidden] { display: none; }
+.product__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+.product__title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.06rem;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.product__price {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--copper-ink);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.product__composition {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: var(--ink-3);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.product__order {
+  margin-top: auto;
+  padding-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  align-self: flex-start;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: var(--ink);
+  transition: gap 0.2s var(--ease), color 0.2s var(--ease);
+}
+.product__order:hover { gap: 14px; color: var(--copper-ink); }
+
+.products__more {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 18px 28px;
+  margin-top: 26px;
+}
+.products__more .btn[hidden] { display: none; }
+.products__note {
+  margin: 0;
+  max-width: 62ch;
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--ink-3);
+}
+
+.flowers__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 14px;
+  margin-top: clamp(32px, 4vw, 48px);
+  padding-top: 26px;
+  border-top: 1px solid var(--line);
+}
+.flowers__actions .link-arrow { margin-inline-start: auto; }
+
+/* ============================================================
    Отзывы
    ============================================================ */
 .reviews__grid {
@@ -1069,6 +1205,8 @@ a.fact__value:hover { color: #fff; }
    Адаптив
    ============================================================ */
 @media (max-width: 1080px) {
+  .flowers__gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .products { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .menu__layout { grid-template-columns: 1fr; }
   .menu__aside { position: static; display: none; }
   .gallery__grid { columns: 3; }
@@ -1153,6 +1291,16 @@ a.fact__value:hover { color: #fff; }
 }
 
 @media (max-width: 560px) {
+  .flowers__gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .products { grid-template-columns: 1fr; }
+  .chips {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 8px;
+    scrollbar-width: none;
+  }
+  .chips::-webkit-scrollbar { display: none; }
+  .flowers__actions .link-arrow { margin-inline-start: 0; }
   .brand__sub { display: none; }
   .brand__mark { width: 34px; height: 34px; font-size: 0.95rem; }
   .header__inner { gap: 16px; }
@@ -1170,8 +1318,7 @@ a.fact__value:hover { color: #fff; }
 
 /* ============================================================
    Служебные состояния
-   ============================================================ */
-@media (prefers-reduced-motion: reduce) {
+   ============================================================ */@media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;

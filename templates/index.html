@@ -42,8 +42,8 @@
 
     <nav class="nav" id="nav" aria-label="Основное меню">
       <ul>
-        <li><a href="#about">Кофейня</a></li>
         <li><a href="#menu">Меню</a></li>
+        <li><a href="#flowers">Цветы</a></li>
         <li><a href="#gallery">Фото</a></li>
         <li><a href="#reviews">Отзывы</a></li>
         <li><a href="#contacts">Контакты</a></li>
@@ -182,8 +182,46 @@
     </div>
   </section>
 
+  <!-- Цветочная студия -->
+  <section class="section section--stone flowers" id="flowers">
+    <div class="container">
+      <header class="section-head reveal">
+        <p class="label">{{FLOWERS_LABEL}}</p>
+        <div class="section-head__row">
+          <h2 class="h2">{{FLOWERS_TITLE}}</h2>
+          <p class="section-head__note">{{FLOWERS_NOTE}} <strong>{{FLOWERS_RATING}} · {{FLOWERS_REVIEWS}} отзывов</strong> на Яндекс Картах.</p>
+        </div>
+      </header>
+
+      <ul class="flowers__gallery reveal">
+        {{FLOWERS_GALLERY}}
+      </ul>
+
+      <div class="chips reveal" role="group" aria-label="Категории товаров">
+        {{FLOWERS_CHIPS}}
+      </div>
+
+      <ul class="products reveal" id="flowers-list">
+        {{FLOWERS_ITEMS}}
+      </ul>
+
+      <div class="products__more reveal">
+        <button class="btn btn--outline" type="button" id="flowers-more" hidden>Показать ещё</button>
+        <p class="products__note">{{FLOWERS_CATALOG_NOTE}}</p>
+      </div>
+
+      <div class="flowers__actions reveal">
+        <a class="btn btn--primary" href="{{FLOWERS_WA}}" target="_blank" rel="noopener">Заказать в WhatsApp</a>
+        <a class="btn btn--outline" href="{{FLOWERS_TG}}" target="_blank" rel="noopener">Telegram</a>
+        <a class="btn btn--outline" href="{{FLOWERS_VK}}" target="_blank" rel="noopener">VK</a>
+        <a class="btn btn--outline" href="{{FLOWERS_DZEN}}" target="_blank" rel="noopener">Дзен</a>
+        <a class="link-arrow" href="{{FLOWERS_MAPS}}" target="_blank" rel="noopener">{{FLOWERS_RATING}} · {{FLOWERS_REVIEWS}} отзывов<span aria-hidden="true">→</span></a>
+      </div>
+    </div>
+  </section>
+
   <!-- Отзывы -->
-  <section class="section section--stone" id="reviews">
+  <section class="section reviews" id="reviews">
     <div class="container reviews__grid">
       <aside class="reviews__score reveal">
         <p class="label">{{REVIEWS_LABEL}}</p>
@@ -244,6 +282,10 @@
             <dd><a href="tel:{{PHONE_HREF}}">{{PHONE}}</a></dd>
           </div>
           <div class="contact-list__row">
+            <dt>Цветы</dt>
+            <dd><a href="tel:{{FLOWERS_PHONE_HREF}}">{{FLOWERS_PHONE}}</a> · <a href="{{FLOWERS_TG}}" target="_blank" rel="noopener">Telegram</a> · <a href="{{FLOWERS_VK}}" target="_blank" rel="noopener">VK</a></dd>
+          </div>
+          <div class="contact-list__row">
             <dt>Написать</dt>
             <dd><a href="{{TELEGRAM}}" target="_blank" rel="noopener">Telegram</a> · <a href="{{WHATSAPP}}" target="_blank" rel="noopener">WhatsApp</a></dd>
           </div>
@@ -273,13 +315,14 @@
 
     <nav class="footer__nav" aria-label="Ссылки в подвале">
       <a href="#menu">Меню</a>
+      <a href="#flowers">Цветы</a>
       <a href="#gallery">Фото</a>
       <a href="#reviews">Отзывы</a>
       <a href="#contacts">Контакты</a>
     </nav>
 
     <div class="footer__meta">
-      <p>{{PHOTOS_CREDIT}}.<br>{{COPYRIGHT}}</p>
+      <p>{{COPYRIGHT}} · {{FLOWERS_NAME}} — цветочная студия по тому же адресу.<br>{{PHOTOS_CREDIT}}.</p>
     </div>
   </div>
 </footer>
