@@ -1,6 +1,7 @@
 # Сборочные артефакты и логи
 data/photos-build.log
 data/_*.txt
+dist/
 
 # Python
 __pycache__/

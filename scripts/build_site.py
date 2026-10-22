@@ -181,10 +181,17 @@ def main():
         business["hours"]["open"], business["hours"]["close"], business["phone"],
         business["prices"]["averageBill"]))
 
+    site_url = (business.get("site") or {}).get("url", "").strip()
+    og_image = (site_url.rstrip("/") + "/" if site_url else "") + "assets/img/og.jpg"
+
     values = {
         "TITLE": "%s — %s" % (business["name"], business["hero"]["subtitle"]),
         "DESCRIPTION": esc(description),
-        "OG_IMAGE": esc(hero["file"]),
+        "NAME": esc(business["name"]),
+        "OG_IMAGE": esc(og_image),
+        "OG_ALT": esc("Кофеin — кофейня на Бориса Пастернака, 43"),
+        "OG_URL_TAG": ('<meta property="og:url" content="%s">' % esc(site_url)) if site_url else "",
+        "CANONICAL": ('<link rel="canonical" href="%s">' % esc(site_url)) if site_url else "",
         "SHORT_NAME": esc(business["shortName"]),
         "BRAND_SUB": "кофейня · Внуково",
         "EYEBROW": esc(business["hero"]["eyebrow"]),
