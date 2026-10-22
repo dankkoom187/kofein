@@ -4,7 +4,7 @@
 
 Источники:
     templates/index.html   - разметка с плейсхолдерами {{...}}
-    data/business.json     - карточка: адрес, часы, телефоны, преимущества
+    data/business.json     - карточка, тексты секций, ссылки
     data/menu.json         - меню по разделам
     data/reviews.json      - отзывы гостей
     data/photos.json       - манифест фотографий (создаётся build_photos.py)
@@ -18,34 +18,18 @@ DATA = os.path.join(ROOT, "data")
 TEMPLATE = os.path.join(ROOT, "templates", "index.html")
 OUT = os.path.join(ROOT, "index.html")
 
-# Фото для первого экрана (стакан с логотипом в руке, на фоне интерьера)
-HERO_PHOTO_ID = "2a0000019ea1e83fbd3fe032e4c158cc81ca"
-
 ICONS = {
-    "cup": '<path d="M4 8h13v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5V8Z"/><path d="M17 9h1.5a2.5 2.5 0 0 1 0 5H17"/><path d="M7 3v2.5M11 3v2.5M15 3v2.5"/>',
-    "leaf": '<path d="M20 4c-9 0-15 4-15 11 0 3 2 5 5 5 7 0 10-7 10-16Z"/><path d="M5 20c3-5 7-8 12-10"/>',
-    "flower": '<path d="M12 8a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/><path d="M12 3c1.6 2 1.6 3.5 0 5M12 21c-1.6-2-1.6-3.5 0-5M3 12c2-1.6 3.5-1.6 5 0M21 12c-2 1.6-3.5 1.6-5 0"/>',
-    "breakfast": '<path d="M6 3v7a2 2 0 0 0 4 0V3M8 10v11"/><path d="M16 3c2 0 3 2 3 5s-1 4-3 4v9"/>',
-    "child": '<circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M8.5 14.5a4.5 4.5 0 0 0 7 0"/>',
-    "gift": '<path d="M3 11h18v9H3zM12 11v9"/><path d="M8 7a2 2 0 0 1 4 0 2 2 0 0 1 4 0c0 2-4 4-4 4S8 9 8 7Z"/>',
-    "wifi": '<path d="M2 8.5a16 16 0 0 1 20 0M5 12.5a11 11 0 0 1 14 0M8.5 16a6 6 0 0 1 7 0"/><path d="M12 19.5h.01"/>',
-    "card": '<rect x="2" y="6" width="20" height="12" rx="2"/><path d="M2 10.5h20"/>',
-    "clock": '<circle cx="12" cy="12" r="9"/><path d="M12 7v5.5l3.5 2"/>',
     "phone": '<path d="M6 3h3l2 5-2.5 1.5a12 12 0 0 0 6 6L16 13l5 2v3a2 2 0 0 1-2 2A16 16 0 0 1 4 5a2 2 0 0 1 2-2Z"/>',
-    "location": '<path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z"/><circle cx="12" cy="10" r="2.5"/>',
-    "telegram": '<path d="M21 4 3 11l5 2 2 6 3-4 5 4 1-13Z"/><path d="M8 13l10-6-8 7"/>',
-    "whatsapp": '<path d="M3 21l1.8-5.2A8 8 0 1 1 8 19.2L3 21Z"/><path d="M9 8.5c0 3.5 2.5 6 6 6 .8 0 1.5-.7 1.5-1.4 0-.4-.2-.7-.5-1l-1-.6c-.3-.2-.7-.2-.9.1l-.5.6c-1.3-.6-2.2-1.5-2.8-2.8l.6-.5c.3-.2.3-.6.1-.9l-.6-1c-.3-.4-.6-.5-1-.5H9c-.6 0-1 .4-1 1"/>',
-    "route": '<circle cx="6" cy="17" r="2.5"/><circle cx="18" cy="8" r="2.5"/><path d="M8.5 17h6a4 4 0 0 0 0-8H10a3 3 0 0 1 0-6h5.5"/>',
-    "award": '<circle cx="12" cy="9" r="5"/><path d="M8.5 13 7 21l5-3 5 3-1.5-8"/>',
-    "message": '<path d="M21 12a8 8 0 0 1-11.6 7.1L3 21l1.9-6.4A8 8 0 1 1 21 12Z"/>',
+    "route": '<circle cx="6" cy="17" r="2.5"/><circle cx="18" cy="8" r="2.5"/>'
+             '<path d="M8.5 17h6a4 4 0 0 0 0-8H10a3 3 0 0 1 0-6h5.5"/>',
+    "arrow": '<path d="M4 12h15M13 6l6 6-6 6"/>',
 }
 
 
-def icon(name, size=20):
-    path = ICONS.get(name, ICONS["cup"])
+def icon(name, size=16):
     return ('<svg width="%d" height="%d" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-            'stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">%s</svg>'
-            % (size, size, path))
+            'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">%s</svg>'
+            % (size, size, ICONS[name]))
 
 
 def load(name):
@@ -55,6 +39,13 @@ def load(name):
 
 def esc(text):
     return html.escape(str(text), quote=True)
+
+
+def photo(photos, pid, fallback_group="gallery"):
+    for item in photos["items"]:
+        if item["id"] == pid:
+            return item
+    return next((p for p in photos["items"] if p["group"] == fallback_group), photos["items"][0])
 
 
 def build_menu(menu):
@@ -69,53 +60,55 @@ def build_menu(menu):
                 '<span class="menu-item__price">%s</span></li>'
                 % (esc(item["title"]), volume, esc(item["price"]))
             )
-        note = ('<p class="menu-card__note">%s</p>' % esc(rubric["note"])) if rubric.get("note") else ""
+        note = ('<p class="menu-group__note">%s</p>' % esc(rubric["note"])) if rubric.get("note") else ""
         blocks.append(
-            '<article class="menu-card"><div class="menu-card__title"><h3>%s</h3></div>%s'
-            '<ul class="menu-list">%s</ul></article>' % (esc(rubric["title"]), note, "".join(items))
+            '<section class="menu-group"><h3 class="menu-group__title">%s</h3>%s'
+            '<ul class="menu-list">%s</ul></section>' % (esc(rubric["title"]), note, "".join(items))
         )
-    return "\n        ".join(blocks)
-
-
-def build_features(business):
-    blocks = []
-    for feature in business["features"]:
-        blocks.append(
-            '<li class="feature"><span class="feature__icon" aria-hidden="true">%s</span>'
-            "<h3>%s</h3><p>%s</p></li>"
-            % (icon(feature.get("icon", "cup"), 22), esc(feature["title"]), esc(feature["text"]))
-        )
-    return "\n        ".join(blocks)
+    return "\n          ".join(blocks)
 
 
 def build_gallery(photos):
-    order = {"review": 0, "candidate": 1, "gallery": 2}
-    items = sorted(photos["items"], key=lambda p: (order.get(p["group"], 3), p["date"] or "", p["id"]))
+    # сначала фото места, затем снимки гостей — от новых к старым
+    gallery = sorted([p for p in photos["items"] if p["group"] == "gallery"], key=lambda p: p["id"])
+    reviews = sorted([p for p in photos["items"] if p["group"] in ("review", "candidate")],
+                     key=lambda p: (p["date"] or "", p["id"]), reverse=True)
+    others = [p for p in photos["items"] if p["group"] not in ("gallery", "review", "candidate")]
+    items = gallery + reviews + others
     blocks = []
-    for photo in items:
-        caption = esc(photo["caption"])
+    for item in items:
+        caption = esc(item["caption"])
         blocks.append(
             '<li><button class="gallery__item" type="button" data-full="%s" data-caption="%s">'
-            '<img src="%s" srcset="%s 640w, %s 1400w" sizes="(max-width: 760px) 45vw, 260px" '
-            'width="%d" height="%d" alt="%s" loading="lazy" decoding="async">'
+            '<img src="%s" srcset="%s 640w, %s 1400w" sizes="(max-width: 560px) 46vw, '
+            '(max-width: 1080px) 31vw, 24vw" width="%d" height="%d" alt="%s" loading="lazy" decoding="async">'
             "<figcaption>%s</figcaption></button></li>"
-            % (esc(photo["file"]), caption, esc(photo["thumb"]), esc(photo["thumb"]), esc(photo["file"]),
-               photo["thumbWidth"], photo["thumbHeight"], caption, caption)
+            % (esc(item["file"]), caption, esc(item["thumb"]), esc(item["thumb"]), esc(item["file"]),
+               item["width"], item["height"], caption, caption)
         )
-    return "\n        ".join(blocks)
+    return "\n          ".join(blocks)
 
 
 def build_reviews(reviews):
     blocks = []
     for review in reviews["items"]:
-        stars = "★" * review["rating"] + '<span class="muted">%s</span>' % ("★" * (5 - review["rating"]))
-        initial = esc(review["author"][:1].upper())
+        stars = "★" * review["rating"] + ('<span class="muted">%s</span>' % ("★" * (5 - review["rating"])))
         blocks.append(
-            '<li class="review"><blockquote>«%s»</blockquote>'
-            '<div class="review__meta"><span class="review__avatar" aria-hidden="true">%s</span>'
-            '<span><span class="review__who">%s</span><br><span class="review__date">%s</span></span>'
-            '<span class="review__stars" aria-label="Оценка %d из 5">%s</span></div></li>'
-            % (esc(review["text"]), initial, esc(review["author"]), esc(review["date"]), review["rating"], stars)
+            '<article class="review"><blockquote>«%s»</blockquote>'
+            '<footer class="review__meta"><span class="review__author">%s</span>'
+            '<span class="review__date">%s</span>'
+            '<span class="review__stars" aria-label="Оценка %d из 5">%s</span></footer></article>'
+            % (esc(review["text"]), esc(review["author"]), esc(review["date"]), review["rating"], stars)
+        )
+    return "\n        ".join(blocks)
+
+
+def build_steps(steps):
+    blocks = []
+    for index, step in enumerate(steps, 1):
+        blocks.append(
+            '<li class="step"><span class="step__num" aria-hidden="true">%02d</span>'
+            "<h3>%s</h3><p>%s</p></li>" % (index, esc(step["title"]), esc(step["text"]))
         )
     return "\n        ".join(blocks)
 
@@ -125,9 +118,7 @@ def build_jsonld(business, menu):
         "@context": "https://schema.org",
         "@type": "CafeOrCoffeeShop",
         "name": business["name"],
-        "description": business["tagline"],
         "url": business["maps"],
-        "image": ["assets/img/photos/%s.jpg" % HERO_PHOTO_ID],
         "telephone": business["phone"],
         "priceRange": business["prices"]["averageBill"],
         "address": {
@@ -150,21 +141,23 @@ def build_jsonld(business, menu):
         }],
         "aggregateRating": {
             "@type": "AggregateRating",
-            "ratingValue": business["rating"]["value"],
+            "ratingValue": business["rating"]["value"].replace(",", "."),
             "reviewCount": business["rating"]["reviews"],
             "bestRating": 5,
         },
         "hasMenu": {
             "@type": "Menu",
-            "name": "Меню",
             "hasMenuSection": [{
                 "@type": "MenuSection",
                 "name": rubric["title"],
                 "hasMenuItem": [{
                     "@type": "MenuItem",
                     "name": item["title"],
-                    "offers": {"@type": "Offer", "price": item["price"].replace(" ", "").replace("₽", ""),
-                               "priceCurrency": "RUB"},
+                    "offers": {
+                        "@type": "Offer",
+                        "price": item["price"].replace(" ", "").replace("₽", ""),
+                        "priceCurrency": "RUB",
+                    },
                 } for item in rubric["items"]],
             } for rubric in menu["rubrics"]],
         },
@@ -178,20 +171,25 @@ def main():
     reviews = load("reviews.json")
     photos = load("photos.json")
 
-    hero = next((p for p in photos["items"] if p["id"] == HERO_PHOTO_ID), photos["items"][0])
+    hero = photo(photos, business["photos"]["hero"], "review")
+    intro_main = photo(photos, business["photos"]["introMain"])
+    intro_small = photo(photos, business["photos"]["introSmall"])
+    menu_photo = photo(photos, business["photos"]["menu"], "review")
+
+    description = ("%s: %s. %s, ежедневно %s–%s, %s. Средний чек %s." % (
+        business["name"], business["hero"]["subtitle"], business["addressShort"],
+        business["hours"]["open"], business["hours"]["close"], business["phone"],
+        business["prices"]["averageBill"]))
 
     values = {
-        "TITLE": "%s — %s" % (business["name"], business["tagline"]),
-        "DESCRIPTION": "%s: %s. %s, ежедневно %s–%s, %s. Средний чек %s." % (
-            business["name"], business["tagline"], business["addressShort"],
-            business["hours"]["open"], business["hours"]["close"], business["phone"],
-            business["prices"]["averageBill"]),
-        "NAME": esc(business["name"]),
-        "SHORT_TITLE": esc(business["shortName"]),
-        "CATEGORIES": esc(", ".join(business["categories"])),
-        "EYEBROW": "Кофейня · район Внуково, Москва",
-        "BRAND_SUB": "кофейня · район Внуково",
-        "TAGLINE": esc(business["tagline"]),
+        "TITLE": "%s — %s" % (business["name"], business["hero"]["subtitle"]),
+        "DESCRIPTION": esc(description),
+        "OG_IMAGE": esc(hero["file"]),
+        "SHORT_NAME": esc(business["shortName"]),
+        "BRAND_SUB": "кофейня · Внуково",
+        "EYEBROW": esc(business["hero"]["eyebrow"]),
+        "SUBTITLE": esc(business["hero"]["subtitle"]),
+        "LEAD": esc(business["hero"]["lead"]),
         "PHONE": esc(business["phone"]),
         "PHONE_HREF": esc(business["phoneHref"]),
         "TELEGRAM": esc(business["telegram"]),
@@ -201,47 +199,73 @@ def main():
         "MAP_EMBED": esc(business["mapEmbed"]),
         "ADDRESS": esc(business["address"]),
         "ADDRESS_SHORT": esc(business["addressShort"]),
-        "HOURS_OPEN": esc(business["hours"]["open"]),
-        "HOURS_CLOSE": esc(business["hours"]["close"]),
-        "RATING_VALUE": esc(business["rating"]["value"]),
+        "RATING": esc(business["rating"]["value"]),
         "REVIEWS_COUNT": esc(business["rating"]["reviews"]),
         "AVERAGE_BILL": esc(business["prices"]["averageBill"]),
-        "BUSINESS_LUNCH": esc(business["prices"]["businessLunch"]),
-        "AWARD": esc(business["award"]),
-        "PHOTOS_COUNT": esc(len(photos["items"])),
+        "MARQUEE": "".join('<span class="marquee__item">%s</span>' % esc(x) for x in business["marquee"]),
+        "INTRO_LABEL": esc(business["intro"]["label"]),
+        "INTRO_TITLE": esc(business["intro"]["title"]),
+        "INTRO_BODY": "".join("<p>%s</p>" % esc(p) for p in business["intro"]["body"]),
+        "STATS": "".join('<li><strong>%s</strong><span>%s</span></li>' % (esc(s["value"]), esc(s["label"]))
+                         for s in business["intro"]["stats"]),
+        "FEATURES_LIST": "".join("<li>%s</li>" % esc(f) for f in business["intro"]["features"]),
+        "INTRO_MAIN": esc(intro_main["file"]),
+        "INTRO_MAIN_ALT": esc(intro_main["caption"]),
+        "INTRO_MAIN_W": intro_main["width"],
+        "INTRO_MAIN_H": intro_main["height"],
+        "INTRO_SMALL": esc(intro_small["file"]),
+        "INTRO_SMALL_ALT": esc(intro_small["caption"]),
+        "INTRO_SMALL_W": intro_small["width"],
+        "INTRO_SMALL_H": intro_small["height"],
+        "INTRO_CAPTION": esc(business["menuSection"]["asideCaption"]),
+        "MENU_LABEL": esc(business["menuSection"]["label"]),
+        "MENU_TITLE": esc(business["menuSection"]["title"]),
+        "MENU_NOTE": esc(business["menuSection"]["note"]),
+        "MENU_HTML": build_menu(menu),
+        "MENU_PHOTO": esc(menu_photo["file"]),
+        "MENU_PHOTO_ALT": esc(menu_photo["caption"]),
+        "MENU_PHOTO_W": menu_photo["width"],
+        "MENU_PHOTO_H": menu_photo["height"],
+        "MENU_CAPTION": esc(business["menuSection"]["asideCaption"]),
+        "GALLERY_LABEL": esc(business["gallerySection"]["label"]),
+        "GALLERY_TITLE": esc(business["gallerySection"]["title"]),
+        "GALLERY_NOTE": esc(business["gallerySection"]["note"]),
+        "GALLERY_HTML": build_gallery(photos),
+        "PHOTOS_COUNT": len(photos["items"]),
+        "REVIEWS_LABEL": esc(business["reviewsSection"]["label"]),
+        "REVIEWS_TITLE": esc(business["reviewsSection"]["title"]),
+        "REVIEWS_LINK": esc(business["reviewsSection"]["linkText"]),
+        "REVIEWS_HTML": build_reviews(reviews),
+        "ORDER_LABEL": esc(business["orderSection"]["label"]),
+        "ORDER_TITLE": esc(business["orderSection"]["title"]),
+        "ORDER_NOTE": esc(business["orderSection"]["note"]),
+        "STEPS": build_steps(business["orderSection"]["steps"]),
+        "CONTACTS_LABEL": esc(business["contactsSection"]["label"]),
+        "CONTACTS_TITLE": esc(business["contactsSection"]["title"]),
+        "CONTACTS_NOTE": esc(business["contactsSection"]["note"]),
         "PHOTOS_CREDIT": esc(business["photosCredit"]),
-        "COPYRIGHT": "© %s" % business["name"],
+        "COPYRIGHT": "© %s" % esc(business["name"]),
         "HERO_PHOTO": esc(hero["file"]),
         "HERO_ALT": esc(hero["caption"]),
-        "HERO_W": esc(hero["width"]),
-        "HERO_H": esc(hero["height"]),
-        "MENU": build_menu(menu),
-        "FEATURES": build_features(business),
-        "GALLERY": build_gallery(photos),
-        "REVIEWS": build_reviews(reviews),
+        "HERO_W": hero["width"],
+        "HERO_H": hero["height"],
         "JSONLD": build_jsonld(business, menu).replace("</", "<\\/"),
-        "PHONE_ICON": icon("phone", 18),
-        "CLOCK_ICON": icon("clock", 18),
-        "LOCATION_ICON": icon("location", 18),
-        "MESSAGE_ICON": icon("message", 18),
-        "ROUTE_ICON": icon("route", 18),
-        "TELEGRAM_ICON": icon("telegram", 18),
-        "WHATSAPP_ICON": icon("whatsapp", 18),
-        "AWARD_ICON": icon("award", 22),
+        "ICON_PHONE": icon("phone"),
+        "ICON_ROUTE": icon("route"),
     }
 
     with open(TEMPLATE, encoding="utf-8") as fh:
         page = fh.read()
     for key, value in values.items():
-        page = page.replace("{{%s}}" % key, value)
+        page = page.replace("{{%s}}" % key, str(value))
 
-    left = [token for token in page.split() if token.startswith("{{")]
+    left = sorted({token[2:].split("}}")[0] for token in page.split() if token.startswith("{{")})
     if left:
-        raise SystemExit("Не подставлены плейсхолдеры: %s" % sorted(set(left)))
+        raise SystemExit("Не подставлены плейсхолдеры: %s" % left)
 
     with open(OUT, "w", encoding="utf-8") as fh:
         fh.write(page)
-    print("index.html готов: %d байт, фото %d, отзывов %d" % (len(page), len(photos["items"]), len(reviews["items"])))
+    print("index.html: %d bytes, photos %d, reviews %d" % (len(page), len(photos["items"]), len(reviews["items"])))
 
 
 if __name__ == "__main__":
