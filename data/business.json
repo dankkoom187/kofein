@@ -87,7 +87,7 @@
   },
   "photosCredit": "Фото — из отзывов и фотогалереи на Яндекс Картах",
   "site": {
-    "url": "",
-    "note": "После публикации вписать адрес вида https://kofein.example.ru/ — тогда превью ссылки и og:image станут абсолютными"
+    "url": "https://dankkoom187.github.io/kofein/",
+    "note": "Адрес сайта: используется для og:url, canonical и абсолютного og:image"
   }
 }
