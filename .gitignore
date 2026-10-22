@@ -1,0 +1,15 @@
+# Сборочные артефакты и логи
+data/photos-build.log
+data/_*.txt
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# OS / редакторы
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

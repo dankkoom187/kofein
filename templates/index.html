@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<meta name="description" content="{{DESCRIPTION}}">
+<meta name="theme-color" content="#1e3b33">
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="{{DESCRIPTION}}">
+<meta property="og:image" content="{{HERO_PHOTO}}">
+<link rel="preload" as="image" href="{{HERO_PHOTO}}">
+<link rel="stylesheet" href="assets/css/styles.css">
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+</head>
+<body>
+<a class="skip-link" href="#main">Перейти к содержанию</a>
+
+<header class="site-header">
+  <div class="container site-header__inner">
+    <a class="brand" href="#top">
+      <span class="brand__mark" aria-hidden="true">☕</span>
+      <span>
+        {{SHORT_TITLE}}
+        <span class="brand__sub">{{BRAND_SUB}}</span>
+      </span>
+    </a>
+
+    <button class="burger" type="button" aria-expanded="false" aria-controls="nav" aria-label="Открыть меню">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav class="nav" id="nav" aria-label="Основное меню">
+      <ul>
+        <li><a href="#menu">Меню</a></li>
+        <li><a href="#features">О кофейне</a></li>
+        <li><a href="#gallery">Фото</a></li>
+        <li><a href="#reviews">Отзывы</a></li>
+        <li><a href="#contacts">Контакты</a></li>
+      </ul>
+    </nav>
+
+    <a class="header-phone" href="tel:{{PHONE_HREF}}">{{PHONE_ICON}}<span>{{PHONE}}</span></a>
+  </div>
+</header>
+
+<main id="main">
+  <!-- Герой -->
+  <section class="hero" id="top">
+    <div class="container hero__grid">
+      <div>
+        <p class="eyebrow">{{EYEBROW}}</p>
+        <h1>{{SHORT_TITLE}} <em>кофейня</em></h1>
+        <p class="lead">{{TAGLINE}}</p>
+
+        <div class="hero__actions">
+          <a class="btn btn--primary" href="{{ROUTE_URL}}" target="_blank" rel="noopener">{{ROUTE_ICON}}Построить маршрут</a>
+          <a class="btn btn--ghost" href="tel:{{PHONE_HREF}}">{{PHONE_ICON}}Позвонить</a>
+          <a class="btn btn--ghost" href="#menu">Смотреть меню</a>
+        </div>
+
+        <p class="rating">
+          <span class="stars" aria-hidden="true">★★★★★</span>
+          <strong>{{RATING_VALUE}}</strong>
+          <span>· {{REVIEWS_COUNT}} отзывов на Яндекс Картах</span>
+        </p>
+
+        <div class="hero__facts">
+          <span>{{CLOCK_ICON}}Ежедневно {{HOURS_OPEN}}–{{HOURS_CLOSE}}</span>
+          <span>{{LOCATION_ICON}}{{ADDRESS_SHORT}}</span>
+          <span>{{PHONE_ICON}}{{PHONE}}</span>
+        </div>
+      </div>
+
+      <div class="hero__media">
+        <div class="hero__photo">
+          <img src="{{HERO_PHOTO}}" alt="{{HERO_ALT}}" width="{{HERO_W}}" height="{{HERO_H}}" fetchpriority="high">
+        </div>
+        <p class="hero__credit">Фото из отзыва на Яндекс Картах</p>
+        <div class="hero__badge">
+          <span class="feature__icon" aria-hidden="true">{{AWARD_ICON}}</span>
+          <span>
+            <strong>{{AWARD}}</strong>
+            <span>Награда Яндекс Карт</span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Преимущества -->
+  <section class="section section--tight" id="features">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Почему к нам заходят</h2>
+        </div>
+        <p>Районная кофейня у метро: плотный кофе, быстрый сервис и уютное место, где можно задержаться.</p>
+      </div>
+      <ul class="features">
+        {{FEATURES}}
+      </ul>
+    </div>
+  </section>
+
+  <!-- Меню -->
+  <section class="section section--kraft" id="menu">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Меню</h2>
+        </div>
+        <p>Цены указаны на момент публикации — уточняйте по телефону, состав и наличие уточнит бариста.</p>
+      </div>
+      <div class="menu-grid">
+        {{MENU}}
+      </div>
+      <p class="menu-note">Есть сезонное меню, меню по запросу (веганское, постное, детское), сэндвичи, каша и десерты. Средний чек — {{AVERAGE_BILL}}, бизнес-ланч — {{BUSINESS_LUNCH}}.</p>
+    </div>
+  </section>
+
+  <!-- Фото -->
+  <section class="section" id="gallery">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Как у нас выглядит</h2>
+        </div>
+        <p>{{PHOTOS_CREDIT}}. Нажмите на фотографию, чтобы открыть её крупно.</p>
+      </div>
+      <ul class="gallery">
+        {{GALLERY}}
+      </ul>
+      <p class="gallery__more">Всего {{PHOTOS_COUNT}} фотографий из карточки на Яндекс Картах.</p>
+    </div>
+  </section>
+
+  <!-- Отзывы -->
+  <section class="section section--green" id="reviews">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Отзывы гостей</h2>
+        </div>
+        <p>{{REVIEWS_COUNT}} отзывов, средняя оценка {{RATING_VALUE}} из 5. Ниже — дословные цитаты с Яндекс Карт.</p>
+      </div>
+      <ul class="reviews">
+        {{REVIEWS}}
+      </ul>
+      <p style="margin-top:26px">
+        <a class="btn btn--light" href="{{MAPS_URL}}" target="_blank" rel="noopener">Все отзывы на Яндекс Картах</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- Как заказать -->
+  <section class="section section--tight">
+    <div class="container">
+      <div class="section-head">
+        <div>
+          <h2>Кофе с собой</h2>
+        </div>
+        <p>Позвоните или напишите — приготовим напиток и сэндвичи к вашему приходу, чтобы не ждать у стойки.</p>
+      </div>
+      <div class="order">
+        <div class="order__card">
+          <h3>По телефону</h3>
+          <p>Приём предзаказа ежедневно с 08:00 до 22:00. Оплата при получении.</p>
+          <a class="btn btn--primary" href="tel:{{PHONE_HREF}}">{{PHONE_ICON}}{{PHONE}}</a>
+        </div>
+        <div class="order__card">
+          <h3>В Telegram</h3>
+          <p>Напишите, что заказать и когда заберёте — ответим в свободное от смены время.</p>
+          <a class="btn btn--ghost" href="{{TELEGRAM}}" target="_blank" rel="noopener">{{TELEGRAM_ICON}}Написать в Telegram</a>
+        </div>
+        <div class="order__card">
+          <h3>В WhatsApp</h3>
+          <p>Удобно, если вы уже заказали навынос и хотите уточнить детали.</p>
+          <a class="btn btn--ghost" href="{{WHATSAPP}}" target="_blank" rel="noopener">{{WHATSAPP_ICON}}Написать в WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Контакты -->
+  <section class="section section--kraft" id="contacts">
+    <div class="container contacts">
+      <div>
+        <h2>Контакты</h2>
+        <ul class="contact-list">
+          <li>
+            <span class="contact-icon" aria-hidden="true">{{LOCATION_ICON}}</span>
+            <div>
+              <dt>Адрес</dt>
+              <dd>{{ADDRESS}}</dd>
+            </div>
+          </li>
+          <li>
+            <span class="contact-icon" aria-hidden="true">{{CLOCK_ICON}}</span>
+            <div>
+              <dt>Часы работы</dt>
+              <dd>Ежедневно {{HOURS_OPEN}}–{{HOURS_CLOSE}}</dd>
+            </div>
+          </li>
+          <li>
+            <span class="contact-icon" aria-hidden="true">{{PHONE_ICON}}</span>
+            <div>
+              <dt>Телефон</dt>
+              <dd><a href="tel:{{PHONE_HREF}}">{{PHONE}}</a></dd>
+            </div>
+          </li>
+          <li>
+            <span class="contact-icon" aria-hidden="true">{{MESSAGE_ICON}}</span>
+            <div>
+              <dt>Мессенджеры</dt>
+              <dd><a href="{{TELEGRAM}}" target="_blank" rel="noopener">Telegram</a> · <a href="{{WHATSAPP}}" target="_blank" rel="noopener">WhatsApp</a></dd>
+            </div>
+          </li>
+        </ul>
+        <a class="btn btn--primary" href="{{ROUTE_URL}}" target="_blank" rel="noopener">{{ROUTE_ICON}}Построить маршрут</a>
+      </div>
+
+      <div class="map-frame">
+        <iframe src="{{MAP_EMBED}}" title="Кофеin кофейня на карте" loading="lazy" allowfullscreen
+                referrerpolicy="no-referrer-when-downgrade"></iframe>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-grid">
+    <div>
+      <p class="brand"><span class="brand__mark" aria-hidden="true">☕</span> {{NAME}}</p>
+      <p class="footer-note">{{ADDRESS}} · ежедневно {{HOURS_OPEN}}–{{HOURS_CLOSE}}</p>
+    </div>
+    <div class="footer-links">
+      <a href="{{MAPS_URL}}" target="_blank" rel="noopener">Яндекс Карты</a>
+      <a href="{{TELEGRAM}}" target="_blank" rel="noopener">Telegram</a>
+      <a href="{{WHATSAPP}}" target="_blank" rel="noopener">WhatsApp</a>
+      <a href="tel:{{PHONE_HREF}}">{{PHONE}}</a>
+    </div>
+  </div>
+  <div class="container" style="margin-top:24px">
+    <p class="footer-note">{{PHOTOS_CREDIT}}. {{COPYRIGHT}}</p>
+  </div>
+</footer>
+
+<!-- Просмотр фотографии -->
+<div class="lightbox" role="dialog" aria-modal="true" aria-label="Просмотр фотографии" aria-hidden="true">
+  <button class="lightbox__close" type="button" aria-label="Закрыть">✕</button>
+  <button class="lightbox__nav lightbox__nav--prev" type="button" aria-label="Предыдущее фото">‹</button>
+  <figure class="lightbox__figure">
+    <img src="" alt="">
+    <figcaption class="lightbox__caption"></figcaption>
+  </figure>
+  <button class="lightbox__nav lightbox__nav--next" type="button" aria-label="Следующее фото">›</button>
+</div>
+
+<script type="application/ld+json">{{JSONLD}}</script>
+<script src="assets/js/main.js" defer></script>
+</body>
+</html>
